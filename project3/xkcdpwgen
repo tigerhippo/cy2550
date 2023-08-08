@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+import argparse
+import random
+import linecache
+
+parser = argparse.ArgumentParser()
+parser.add_argument('-w', '--words', default=4, type=int)
+parser.add_argument('-c', '--caps', default=0, type=int)
+parser.add_argument('-n', '--numbers', default=0, type=int)
+parser.add_argument('-s', '--symbols', default=0, type=int)
+
+args = parser.parse_args()
+num_words = args.words
+num_caps = args.caps
+num_numbers = args.numbers
+num_symbols = args.symbols
+
+
+words = []
+for i in range(num_words):
+    rand_num = random.randint(1, 370105)
+    word = linecache.getline('words.txt', rand_num)
+    word_without_newline = word.strip()
+    words.append(word_without_newline)
+
+
+chosen_indexes = []
+num_times_loop = 0
+if num_caps > num_words:
+    num_times_loop = num_words
+else:
+    num_times_loop = num_caps
+
+for i in range(num_times_loop):
+    rand_index = random.randint(0, len(words) - 1)
+    while chosen_indexes.count(rand_index) != 0:
+        rand_index = random.randint(0, len(words) - 1)
+    
+    capitalized_word = words[rand_index].capitalize()
+    words[rand_index] = capitalized_word
+    chosen_indexes.append(rand_index)
+
+
+for i in range(num_numbers):
+    rand_position = random.randint(0, len(words))
+    rand_number = random.randint(48, 57)
+    if rand_position == len(words):
+        word_with_number = words[rand_position - 1] + chr(rand_number)
+        words[rand_position - 1] = word_with_number
+    else:
+        word_with_number = chr(rand_number) + words[rand_position] 
+        words[rand_position] = word_with_number
+
+
+for i in range(num_symbols):
+    rand_position = random.randint(0, len(words))
+    rand_symbol = random.randint(33, 126)
+    while (rand_symbol >= 48 and rand_symbol <= 57) or (rand_symbol >= 65 and rand_symbol <= 90) or (rand_symbol >= 97 and rand_symbol <= 122):
+        rand_symbol = random.randint(33, 126)
+
+    if rand_position == len(words):
+        word_with_symbol = words[rand_position - 1] + chr(rand_symbol)
+        words[rand_position - 1] = word_with_symbol
+    else:
+        word_with_symbol = chr(rand_symbol) + words[rand_position]
+        words[rand_position] = word_with_symbol
+
+
+password = ""
+for i in range(len(words)):
+    password += words[i]
+
+print(password)
